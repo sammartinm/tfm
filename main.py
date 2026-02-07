@@ -30,28 +30,18 @@ def main():
     df = pd.read_csv(ruta_csv)
     
     # Filtro rápido: Eliminar filas con nulos si las hay
-    df = df.dropna(subset=['DT41J_Celsius', 'Fluence_n_cm2', 'Cu', 'Ni', 'Temperature_Celsius'])
+    df = df.dropna(subset=['DT41J_Celsius', 'Fluence_n_cm2', 'Cu', 'Ni', 
+                           'Temperature_Celsius'])
     
     # 2. CALCULAR BASELINE (FÍSICA)
     print("Calculando predicciones usando norma ASTM E900-15...")
-    
-    # Importante: Asegurar que Product_Form son strings ('W', 'P', 'F')
-    # Si en tu CSV vienen como 'Forging', etc., habría que mapearlos.
-    # Viendo tu CSV, parece que ya vienen como 'F', 'W', 'P'.
-    
-    # Mn: Si tu dataset NO tiene columna Mn, usamos un valor estándar (ej. 1.40)
-    if 'Mn' in df.columns:
-        mn_values = df['Mn'].values
-    else:
-        print("AVISO: Columna 'Mn' no encontrada. Usando promedio 1.40%")
-        mn_values = np.full(len(df), 1.40)
 
     try:
         preds_fisica = astm_e900_15(
             cu=df['Cu'].values,
             ni=df['Ni'].values,
             p=df['P'].values,
-            mn=mn_values,
+            mn=df['Mn'].values,
             temp_c=df['Temperature_Celsius'].values,
             fluence=df['Fluence_n_cm2'].values,
             product_form=df['Product_Form'].values
@@ -72,7 +62,7 @@ def main():
             print(">> ¡ÉXITO! La fórmula física funciona correctamente (Error < 15°C).")
             print(">> Tu objetivo con la Red Neuronal será bajar de este número.")
         else:
-            print(">> OJO: El error es alto. Verifica las unidades (¿Fahrenheit vs Celsius?)")
+            print(">> OJO: El error es alto")
             
     except Exception as e:
         print(f"\nERROR CRÍTICO AL CALCULAR FÓRMULA:\n{e}")
