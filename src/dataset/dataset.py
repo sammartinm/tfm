@@ -1,4 +1,6 @@
-"""Módulo para la gestión y preprocesamiento del dataset de radiación."""
+"""Módulo para la gestión y preprocesamiento del dataset de radiación.
+Modulo: dataset.py
+"""
 
 import pandas as pd
 import torch
